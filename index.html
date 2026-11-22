@@ -5,7 +5,7 @@
 <title>Вена: квартиры 18/9/8, до €600k</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta property="og:title" content="🏠 Поиск квартиры для Веры · Вена">
-<meta property="og:description" content="12 квартир в районах 18 / 9 / 8, до €600k. Жми на номер — откроется объявление на willhaben.">
+<meta property="og:description" content="Подборы квартир в районах 18 / 9 / 8, до €600k. Жми на номер — откроется объявление.">
 <meta property="og:image" content="https://egorka23.github.io/wien-map/preview.jpg">
 <meta property="og:type" content="website">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
@@ -16,14 +16,20 @@
   .pop a{font-weight:700}
   .lbl{background:#fff;border:1px solid #999;border-radius:4px;font:600 12px/1.3 Arial;padding:2px 6px;box-shadow:0 1px 3px rgba(0,0,0,.3);white-space:nowrap}
   .legend{position:absolute;bottom:12px;left:12px;background:#fff;padding:8px 12px;border-radius:8px;font:13px Arial;z-index:1000;box-shadow:0 1px 5px rgba(0,0,0,.3)}
+  #batchbar{position:absolute;top:12px;right:12px;background:#fff;padding:8px 12px;border-radius:8px;font:13px/1.6 Arial;z-index:1000;box-shadow:0 1px 5px rgba(0,0,0,.3)}
+  #batchbar label{display:block;white-space:nowrap}
+  #batchbar input{margin-right:6px}
+  #batchbar button{margin-top:4px;font:12px Arial;padding:2px 8px}
 </style>
 </head>
 <body>
 <div id="map"></div>
-<div class="legend">Вена · покупка ≤€600k · 18/9/8 · не первый этаж · willhaben, 21.11.2026</div>
+<div class="legend">Вена · покупка ≤€600k · 18/9/8 · не первый этаж · 21.11.2026</div>
+<div id="batchbar"></div>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-const items=[
+const batches=[
+{name:"Подбор 1 · 18/9/8 · ≤€600k",color:"#c0392b",items:[
  {n:1,lat:48.231003,lng:16.344473,lbl:"1 · €355k · 61м² · 2 ком · 5 эт · светло, сразу заезжать · кухня отд., укомплектована",t:"у Währinger Park",d:"61 м², 2 комн., 5-й этаж (4. Liftstock), отдельная кухня, много хранения",u:"https://www.willhaben.at/iad/immobilien/d/eigentumswohnung/wien/wien-1180-waehring/naechst-waehringer-park-lichtdurchflutete-2-zimmer-wohnung-mit-separater-kueche-4-og-viel-helligkeit-und-stauraum-sofort-bezugsbereit-1496836845/"},
  {n:2,lat:48.22652,lng:16.33363,lbl:"2 · €526k · 68м² · 2 ком · 7 эт · верхний · терраса 18м² · кухня-гостиная",t:"Staudgasse, частник",d:"верхний этаж (6. Liftstock, Dachwohnung), южная терраса 18 м², подземный паркинг, дом реновирован 2023/24, без комиссии",u:"https://www.willhaben.at/iad/immobilien/d/eigentumswohnung/wien/wien-1180-waehring/privat-68m-dachwohnung-plus-18m-sued-terrasse-tiefgarage-saniertes-haus-parknaehe-1757554290/"},
  {n:3,lat:48.23272,lng:16.324764,lbl:"3 · €465k · 69м² · 3 ком · 4 эт · балкон · кухня отдельная",t:"Währing",d:"69 м², 3 комн., 4-й этаж (3. Stock), маленький балкон, дом 1932",u:"https://www.willhaben.at/iad/immobilien/d/eigentumswohnung/wien/wien-1180-waehring/dritter-stock-siebter-himmel-1257389271/"},
@@ -36,6 +42,15 @@ const items=[
  {n:10,lat:48.212249,lng:16.340831,lbl:"10 · €500k · 73м² · 2 ком · 6 эт · сразу, без комиссии · кухня 2011",t:"Nicoladoni-Hof (точка приблизительная)",d:"73 м², 2 комн., надстройка на Altbaum, заезжать сразу. Адрес не указан — пин у Uhlplatz",u:"https://www.willhaben.at/iad/immobilien/d/eigentumswohnung/wien/wien-1080-josefstadt/provisionsfreie-wohnung-im-8-bezirk-1675790724/"},
  {n:11,lat:48.211838,lng:16.340706,lbl:"11 · €449k · 84м² · 3 ком · 4-5 эт · ДВУХЪЯРУСНАЯ · кухня отд.",t:"Blindengasse",d:"84 м², 3 комн., двухъярусная: 4-й этаж + мезонин (3. Stock mit Mezzanin), отдельная кухня, кладовка, лифт",u:"https://www.willhaben.at/iad/immobilien/d/eigentumswohnung/wien/wien-1080-josefstadt/-neu-gebrauchte-3-zimmer-altbauwohnung-mit-separater-kueche-abstellraum-und-lift-blindengasse-4-1127731582/"},
  {n:12,lat:48.21007,lng:16.34528,lbl:"12 · €386k · 48м² · 2 ком · 8 эт · терраса 10м² · кухня и с/у под ремонт",t:"Lerchengasse",d:"48 м², 2 комн., крышная терраса 10 м², требует реновации",u:"https://www.willhaben.at/iad/immobilien/d/eigentumswohnung/wien/wien-1080-josefstadt/terrassenwohnung-josefstadt-exzellente-lage-1910780276/"}
+]},
+{name:"Подбор 2 · кухня от 10м² · 18/9/8",color:"#2471a3",items:[
+ {n:1,lat:48.213406,lng:16.343008,lbl:"1 · €329k · 60м² · 2 ком · 2 эт · Wohnküche 23м²",t:"Josefstadt",d:"60 м², 2 комн., Wohnküche 23 м² (подтверждено текстом), комната во двор/запад, 1.OG = 2-й",u:"https://www.willhaben.at/iad/immobilien/d/eigentumswohnung/wien/wien-1080-josefstadt/zwei-zimmer-wohnung-in-zentraler-wiener-lage-in-der-begehrten-josefstadt-1534369227/"},
+ {n:2,lat:48.231224,lng:16.346407,lbl:"2 · €459k · 81м² · 3 ком · 5 эт · Wohnküche ~41м²",t:"Roof-Top Währing",d:"81 м², 3 комн., Wohnküche ca. 40,6 м², крыши уровень (4.OG). Объявление «investment» — проверить, нет ли жильцов",u:"https://www.willhaben.at/iad/immobilien/d/eigentumswohnung/wien/wien-1180-waehring/roof-top-waehring-tolle-investmentmoeglichkeit-im-herzen-des-18-bezirks-2023026570/"},
+ {n:3,lat:48.23134,lng:16.357405,lbl:"3 · €499k · 77м² · 2 ком · 3 эт · Wohnküche ~33м²",t:"Alsergrund, balkon разрешён",d:"77 м², 2 комн., Wohnküche с Einbauküche ca. 33 м², балкон согласован, Gründerzeit, новые окна",u:"https://www.willhaben.at/iad/immobilien/d/eigentumswohnung/wien/wien-1090-alsergrund/grosszuegiger-2-zimmer-altbau-balkon-bewilligt-alte-wu-1338680187/"},
+ {n:4,lat:48.2182961,lng:16.3394758,lbl:"4 · €549k · 53м² · 2 ком · 2 эт · Wohnküche 27м² · новостройка",t:"Martinstraße 86 (пин приблизительный)",d:"53 м², 2 комн., Wohnküche 26,8 м² (таблица помещений), лоджия, M86 — new build, Tiefgarage. Адрес не в данных, пин по улице",u:"https://www.willhaben.at/iad/immobilien/d/eigentumswohnung/wien/wien-1180-waehring/m86-eigentumswohnung-ideal-fuer-singles-oder-paare-2-zimmer-und-eigene-loggia-1098531180/"},
+ {n:5,lat:48.211838,lng:16.340706,lbl:"5 · €495k · 87м² · 3 ком · 3 эт · Wohnküche + кабинет",t:"тот же дом, что №11 из подбора 1",d:"87 м², 3 комн. + Kabinett, Wohnküche (метраж в тексте не указан — уточнить), комната во двор, 2. Liftstock",u:"https://www.willhaben.at/iad/immobilien/d/eigentumswohnung/wien/wien-1080-josefstadt/-neu-gebrauchte-3-zimmer-altbauwohnung-mit-wohnkueche-hofseitigem-zimmer-und-kabinett-im-2-liftstock-1670839552/"},
+ {n:6,lat:48.23482,lng:16.31833,lbl:"6 · €349k · 56м² · 2 ком · 2 эт · Wohnküche (м² уточнить)",t:"Währing, мебель",d:"56 м², 2 комн., Wohnküche + спальня 14 м², меблирована, тишина. Метраж кухни в тексте не указан — уточнить",u:"https://www.willhaben.at/iad/immobilien/d/eigentumswohnung/wien/wien-1180-waehring/zweizimmerwohnung-voll-moebliert-ruhelage-1276701499/"}
+]}
 ];
 const map=L.map('map').setView([48.221,16.347],13);
 L.tileLayer('https://{s}.tile.openstreetmap.de/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap',maxZoom:18}).addTo(map);
@@ -50,11 +65,20 @@ for(const m of lm){
 }
 L.marker([48.2299518,16.3308169],{icon:L.divIcon({className:'',html:'<div class="pin" style="background:#1e8449">В</div>',iconSize:[28,28],iconAnchor:[14,14]})})
  .addTo(map).bindPopup('<div class="pop"><b>Вера</b><br>Weinhausergasse 5/17, 1180 Wien</div>').bindTooltip('Вера · Weinhausergasse 5, 1180',{permanent:true,direction:'right',className:'lbl'});
-for(const it of items){
-  const mk=L.marker([it.lat,it.lng],{icon:L.divIcon({className:'',html:'<div class="pin" style="cursor:pointer">'+it.n+'</div>',iconSize:[28,28],iconAnchor:[14,14]}),title:'Открыть объявление'})
-   .addTo(map).bindTooltip(it.lbl,{permanent:true,direction:'right',className:'lbl'});
-  mk.on('click',()=>window.open(it.u,'_blank'));
-}
+const groups=batches.map((b,bi)=>{
+  const g=L.layerGroup().addTo(map);
+  for(const it of b.items){
+    const mk=L.marker([it.lat,it.lng],{icon:L.divIcon({className:'',html:'<div class="pin" style="cursor:pointer;background:'+b.color+'">'+(b.items.length>9?b.n:bi+1+'.'+it.n)+'</div>',iconSize:[28,28],iconAnchor:[14,14]}),title:'Открыть объявление'})
+     .addTo(g).bindTooltip(it.lbl,{permanent:true,direction:'right',className:'lbl'});
+    mk.on('click',()=>window.open(it.u,'_blank'));
+  }
+  return g;
+});
+const bar=document.getElementById('batchbar');
+bar.innerHTML=batches.map((b,i)=>'<label><input type="checkbox" data-i="'+i+'" checked><span style="color:'+b.color+'">●</span> '+b.name+'</label>').join('')+'<button id="balloon">все</button> <button id="bnone">снять</button>';
+bar.addEventListener('change',e=>{const i=+e.target.dataset.i; if(isNaN(i))return; e.target.checked?map.addLayer(groups[i]):map.removeLayer(groups[i]);});
+document.getElementById('balloon').onclick=()=>{bar.querySelectorAll('input').forEach(c=>{c.checked=true;map.addLayer(groups[+c.dataset.i]);});};
+document.getElementById('bnone').onclick=()=>{bar.querySelectorAll('input').forEach(c=>{c.checked=false;map.removeLayer(groups[+c.dataset.i]);});};
 </script>
 </body>
 </html>
